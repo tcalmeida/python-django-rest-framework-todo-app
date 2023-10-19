@@ -12,6 +12,7 @@ def list_tasks(request):
     return Response(serializer.data)
 
 
+@api_view(['GET'])
 def list_task(request, pk):
     try:
         task = Task.objects.get(pk=pk)
@@ -20,3 +21,12 @@ def list_task(request, pk):
 
     serializer = TaskSerializer(task)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+def create_task(request):
+    serializer = TaskSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
