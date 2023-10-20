@@ -16,6 +16,8 @@ function getCookie(name) {
 		}
 var csrftoken = getCookie('csrftoken');
 
+let activeTask = null
+
 function createList(){
     const wrapper = document.getElementById("list-wrapper")
     wrapper.innerHTML = ''
@@ -41,15 +43,32 @@ function createList(){
             `
             wrapper.innerHTML += task
         }
+
+        // event to permit click each edit btn separately - identifying each task
+        for (i in list){
+            let editBtn = document.getElementsByClassName('edit')[i]
+            editBtn.addEventListener('click', (function(task){
+                return function(){
+                    editTask(task)
+                }
+            })(list[i]))
+        }
     })
 }
 
+// form submission to server
 const form = document.getElementById('form-wrapper')
-    // form submission
     form.addEventListener('submit', function(e){
         e.preventDefault()
         console.log('Form submitted')
-        let url = 'http://127.0.0.1:8000/create-task/'
+        var url = 'http://127.0.0.1:8000/create-task/'
+
+        // to update task and submit it
+        if (activeTask != null){
+             var url = 'http://'+`127.0.0.1:8000/update-task/${activeTask.id}/`
+             activeTask = null
+        }
+
         let title = document.getElementById('title').value
         fetch(url, {
             method: 'POST',
@@ -64,7 +83,16 @@ const form = document.getElementById('form-wrapper')
         })
     })
 
+// edit task in title form when btn is clicked
+function editTask(task){
+			console.log('Item clicked:', task)
+			activeTask = task
+			document.getElementById('title').value = activeTask.title
+		}
 
+
+
+}
 
 
 createList()
