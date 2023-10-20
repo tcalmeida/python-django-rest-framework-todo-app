@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 @api_view(['GET'])
 def list_tasks(request):
-    tasks = Task.objects.all()
+    tasks = Task.objects.all().order_by('-id')
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data)
 
@@ -32,7 +32,7 @@ def create_task(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['PUT'])
+@api_view(['POST', 'PUT'])
 def update_task(request, pk):
     try:
         task = Task.objects.get(pk=pk)
