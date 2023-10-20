@@ -1,6 +1,25 @@
+// to send crsf token in form via AJAX (django docs)
+function getCookie(name) {
+		    var cookieValue = null;
+		    if (document.cookie && document.cookie !== '') {
+		        var cookies = document.cookie.split(';');
+		        for (var i = 0; i < cookies.length; i++) {
+		            var cookie = cookies[i].trim();
+		            // Does this cookie string begin with the name we want?
+		            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		                break;
+		            }
+		        }
+		    }
+		    return cookieValue;
+		}
+var csrftoken = getCookie('csrftoken');
+
 function createList(){
     const wrapper = document.getElementById("list-wrapper")
-    const url = 'http://127.0.0.1:8000/list-tasks/'
+    wrapper.innerHTML = ''
+    let url = 'http://127.0.0.1:8000/list-tasks/'
 
     fetch(url).then((resp) => resp.json()).then(function(data){
         console.log('data:', data)
@@ -24,5 +43,28 @@ function createList(){
         }
     })
 }
+
+const form = document.getElementById('form-wrapper')
+    // form submission
+    form.addEventListener('submit', function(e){
+        e.preventDefault()
+        console.log('Form submitted')
+        let url = 'http://127.0.0.1:8000/create-task/'
+        let title = document.getElementById('title').value
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json',
+                'X-CSRFToken':csrftoken,
+            },
+            body: JSON.stringify({'title': title})
+        }).then(function(response){
+            createList()          // return tasks after POST
+            document.getElementById('form').reset()
+        })
+    })
+
+
+
 
 createList()
