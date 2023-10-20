@@ -17,17 +17,20 @@ function getCookie(name) {
 var csrftoken = getCookie('csrftoken');
 
 let activeTask = null
+let tasks_snap = []
 
 function createList(){
     const wrapper = document.getElementById("list-wrapper")
-    wrapper.innerHTML = ''
     let url = 'http://127.0.0.1:8000/list-tasks/'
 
     fetch(url).then((resp) => resp.json()).then(function(data){
-        console.log('data:', data)
-
         const list = data
         for (i in list){
+
+            //prevent re-render the page when remove task
+            try {
+                 document.getElementById(`data-row-${i}`).remove()
+            } catch(error){}
 
             let title = `<span class='title'>${list[i].title}</span>`
             if (list[i].completed == true){
@@ -48,6 +51,14 @@ function createList(){
             `
             wrapper.innerHTML += task
         }
+
+        // maintain the page on edited task
+        if (tasks_snap.length > list.length){
+            for(let i = list.length; i < tasks_snap.length; i++){
+                document.getElementById(`data-row-${i}`).remove()
+            }
+        }
+        tasks_snap = list
 
         // event to permit click each edit and delete btn separately - identifying each task
         for (i in list){
@@ -80,7 +91,6 @@ function createList(){
 const form = document.getElementById('form-wrapper')
     form.addEventListener('submit', function(e){
         e.preventDefault()
-        console.log('Form submitted')
         var url = 'http://127.0.0.1:8000/create-task/'
 
         // to update task and submit it to server
@@ -105,13 +115,11 @@ const form = document.getElementById('form-wrapper')
 
 // edit task in title form when btn is clicked
 function editTask(task){
-			console.log('Item clicked:', task)
 			activeTask = task
 			document.getElementById('title').value = activeTask.title
 		}
 
 function deleteTask(task){
-    console.log('Delete clicked')
     let url = `http://127.0.0.1:8000/delete-task/${task.id}/`
     fetch(url, {
          method: 'DELETE',
@@ -124,9 +132,8 @@ function deleteTask(task){
     })
 }
 
+// define if task was completed or not
 function statusTask(task) {
-    console.log('status clicked')
-
     task.completed = !task.completed
      let url = `http://127.0.0.1:8000/update-task/${task.id}/`
     fetch(url, {
@@ -142,6 +149,5 @@ function statusTask(task) {
         createList()
     })
 }
-
 
 createList()
