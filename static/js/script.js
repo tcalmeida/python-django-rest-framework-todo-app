@@ -32,7 +32,7 @@ function createList(){
                  document.getElementById(`data-row-${i}`).remove()
             } catch(error){}
 
-            let title = `<span class='title'>${list[i].title}</span>`
+            let title = `<span style='font-weight: bold' class='title'>${list[i].title}</span>`
             if (list[i].completed == true){
                title = `<strike class='title'>${list[i].title}</strike>`
             }
@@ -45,7 +45,7 @@ function createList(){
                         <button class='btn btn-sm btn-outline-info edit'>Edit</button>
                     </div>
                     <div style="flex:1">
-                        <button class='btn btn-sm btn-outline-dark delete'>-</button>
+                        <button class='btn btn-sm btn-outline-danger delete'>-</button>
                     </div>
                 </div>
             `
