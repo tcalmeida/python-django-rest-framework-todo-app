@@ -44,26 +44,34 @@ function createList(){
             wrapper.innerHTML += task
         }
 
-        // event to permit click each edit btn separately - identifying each task
+        // event to permit click each edit and delete btn separately - identifying each task
         for (i in list){
             let editBtn = document.getElementsByClassName('edit')[i]
+            let deleteBtn = document.getElementsByClassName('delete')[i]
+
             editBtn.addEventListener('click', (function(task){
                 return function(){
                     editTask(task)
+                }
+            })(list[i]))
+
+            deleteBtn.addEventListener('click', (function(task){
+                return function(){
+                    deleteTask(task)
                 }
             })(list[i]))
         }
     })
 }
 
-// form submission to server
+// form submission to server - create task
 const form = document.getElementById('form-wrapper')
     form.addEventListener('submit', function(e){
         e.preventDefault()
         console.log('Form submitted')
         var url = 'http://127.0.0.1:8000/create-task/'
 
-        // to update task and submit it
+        // to update task and submit it to server
         if (activeTask != null){
              var url = 'http://'+`127.0.0.1:8000/update-task/${activeTask.id}/`
              activeTask = null
@@ -90,8 +98,18 @@ function editTask(task){
 			document.getElementById('title').value = activeTask.title
 		}
 
-
-
+function deleteTask(task){
+    console.log('Delete clicked')
+    let url = `http://127.0.0.1:8000/delete-task/${task.id}/`
+    fetch(url, {
+         method: 'DELETE',
+         headers: {
+             'Content-type': 'application/json',
+             'X-CSRFToken':csrftoken,
+         }
+    }).then((response) => {
+        createList()
+    })
 }
 
 
