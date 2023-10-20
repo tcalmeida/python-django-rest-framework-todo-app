@@ -28,10 +28,15 @@ function createList(){
 
         const list = data
         for (i in list){
+
+            let title = `<span class='title'>${list[i].title}</span>`
+            if (list[i].completed == true){
+               title = `<strike class='title'>${list[i].title}</strike>`
+            }
             const task = `
                 <div id='data-row-${i}' class='task-wrapper flex-wrapper'>
                     <div style="flex:7">
-                        <span class='title'>${list[i].title}</span>
+                       ${title}
                     </div>
                     <div style="flex:1">
                         <button class='btn btn-sm btn-outline-info edit'>Edit</button>
@@ -48,6 +53,7 @@ function createList(){
         for (i in list){
             let editBtn = document.getElementsByClassName('edit')[i]
             let deleteBtn = document.getElementsByClassName('delete')[i]
+            let status = document.getElementsByClassName('title')[i]
 
             editBtn.addEventListener('click', (function(task){
                 return function(){
@@ -58,6 +64,12 @@ function createList(){
             deleteBtn.addEventListener('click', (function(task){
                 return function(){
                     deleteTask(task)
+                }
+            })(list[i]))
+
+            status.addEventListener('click', (function(task){
+                return function(){
+                    statusTask(task)
                 }
             })(list[i]))
         }
@@ -107,6 +119,25 @@ function deleteTask(task){
              'Content-type': 'application/json',
              'X-CSRFToken':csrftoken,
          }
+    }).then((response) => {
+        createList()
+    })
+}
+
+function statusTask(task) {
+    console.log('status clicked')
+
+    task.completed = !task.completed
+     let url = `http://127.0.0.1:8000/update-task/${task.id}/`
+    fetch(url, {
+         method: 'POST',
+         headers: {
+             'Content-type': 'application/json',
+             'X-CSRFToken':csrftoken,
+         },
+         body: JSON.stringify({'title': task.title,
+         'completed': task.completed
+         })
     }).then((response) => {
         createList()
     })
