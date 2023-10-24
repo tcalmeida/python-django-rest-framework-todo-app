@@ -1,4 +1,5 @@
 A To-Do app built using django REST framework and Ajax.
+Available on AWS soon.
 
 ## Screenshot
 
