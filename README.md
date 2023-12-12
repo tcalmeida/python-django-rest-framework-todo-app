@@ -1,4 +1,11 @@
-A To-Do app built using django REST framework and Ajax.
+A To-Do app built using django REST framework with serializers and Ajax.
+
+# Installation
+1. Clone repository
+2. Install dependencies `pip install -r requirements.txt`
+3. Migrate db `python manage.py migrate --run-syncdb`
+4. Run app `python manage.py runserver`
+
 
 ## Screenshot
 
